@@ -12,12 +12,6 @@ provider "azurerm" {
   # - ARM_CLIENT_SECRET
   # - ARM_TENANT_ID
   # - ARM_SUBSCRIPTION_ID
-  
-  # 明示的に変数を指定する場合はコメントを解除
-  # client_id       = var.client_id
-  # client_secret   = var.client_secret
-  # tenant_id       = var.tenant_id
-  # subscription_id = var.subscription_id
 }
 
 # リソース名の重複を避けるためのランダム文字列
