@@ -109,85 +109,51 @@ jobs:
       if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
   # Azure デプロイジョブ
-deploy-azure:
-  needs: detect-changes
-  if: |
-    github.event_name == 'workflow_dispatch' && (github.event.inputs.deploy_target == 'all' || github.event.inputs.deploy_target == 'azure') ||
-    github.event_name != 'workflow_dispatch' && needs.detect-changes.outputs.azure_changed == 'true'
-  runs-on: ubuntu-latest
-  environment: azure-deployment
-  
-  steps:
-  - name: Checkout
-    uses: actions/checkout@v3
+  deploy-azure:
+    needs: detect-changes
+    if: |
+      github.event_name == 'workflow_dispatch' && (github.event.inputs.deploy_target == 'all' || github.event.inputs.deploy_target == 'azure') ||
+      github.event_name != 'workflow_dispatch' && needs.detect-changes.outputs.azure_changed == 'true'
+    runs-on: ubuntu-latest
+    environment: azure-deployment
+    
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-  - name: Setup Terraform
-    uses: hashicorp/setup-terraform@v2
-    with:
-      terraform_version: 1.5.0
-      cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.0
+        cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
 
-  - name: Azure Login
-    uses: azure/login@v1
-    with:
-      creds: ${{ secrets.AZURE_CREDENTIALS }}
+    - name: Azure Login
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-  # ここに環境変数を抽出するステップを追加
-  - name: Extract Azure Credentials
-    run: |
-      # JSONからクレデンシャル情報を抽出
-      AZURE_CREDS='${{ secrets.AZURE_CREDENTIALS }}'
-      echo "ARM_CLIENT_ID=$(echo $AZURE_CREDS | jq -r .clientId)" >> $GITHUB_ENV
-      echo "ARM_CLIENT_SECRET=$(echo $AZURE_CREDS | jq -r .clientSecret)" >> $GITHUB_ENV
-      echo "ARM_SUBSCRIPTION_ID=$(echo $AZURE_CREDS | jq -r .subscriptionId)" >> $GITHUB_ENV
-      echo "ARM_TENANT_ID=$(echo $AZURE_CREDS | jq -r .tenantId)" >> $GITHUB_ENV
+    - name: Terraform Init
+      run: terraform init
+      working-directory: ./azure
 
-  - name: Terraform Init
-    run: terraform init
-    working-directory: ./azure
-    # ここに環境変数を追加
-    env:
-      ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ env.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
+    - name: Terraform Format
+      run: terraform fmt -check
+      working-directory: ./azure
 
-  - name: Terraform Format
-    run: terraform fmt -check
-    working-directory: ./azure
+    - name: Terraform Validate
+      run: terraform validate
+      working-directory: ./azure
 
-  - name: Terraform Validate
-    run: terraform validate
-    working-directory: ./azure
-    # ここに環境変数を追加
-    env:
-      ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ env.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
+    - name: Terraform Plan
+      run: terraform plan
+      working-directory: ./azure
+      if: github.event_name == 'pull_request'
 
-  - name: Terraform Plan
-    run: terraform plan
-    working-directory: ./azure
-    if: github.event_name == 'pull_request'
-    # ここに環境変数を追加
-    env:
-      ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ env.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+      working-directory: ./azure
+      if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
 
-  - name: Terraform Apply
-    run: terraform apply -auto-approve
-    working-directory: ./azure
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
-    # ここに環境変数を追加
-    env:
-      ARM_CLIENT_ID: ${{ env.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ env.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ env.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ env.ARM_TENANT_ID }}
-      
   # GCP デプロイジョブ
   deploy-gcp:
     needs: detect-changes

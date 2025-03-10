@@ -3,9 +3,17 @@
 # Azureプロバイダー設定
 provider "azurerm" {
   features {}
+
   
-  # サービスプリンシパルの認証情報
-  # 環境変数またはGitHub Secretsから取得する場合はコメントアウトを解除
+  
+  # 環境変数から認証情報を取得
+  # GitHub Actionsでは、以下の環境変数を設定する必要があります:
+  # - ARM_CLIENT_ID
+  # - ARM_CLIENT_SECRET
+  # - ARM_TENANT_ID
+  # - ARM_SUBSCRIPTION_ID
+  
+  # 明示的に変数を指定する場合はコメントを解除
   # client_id       = var.client_id
   # client_secret   = var.client_secret
   # tenant_id       = var.tenant_id
