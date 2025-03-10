@@ -23,3 +23,30 @@ variable "environment" {
   type        = string
   default     = "development"
 }
+
+# サービスプリンシパルの認証情報
+variable "client_id" {
+  description = "AzureサービスプリンシパルのクライアントID"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "client_secret" {
+  description = "Azureサービスプリンシパルのクライアントシークレット"
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "tenant_id" {
+  description = "AzureテナントID"
+  type        = string
+  default     = ""
+}
+
+variable "subscription_id" {
+  description = "AzureサブスクリプションID"
+  type        = string
+  default     = ""
+}
