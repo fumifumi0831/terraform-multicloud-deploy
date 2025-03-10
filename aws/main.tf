@@ -16,7 +16,7 @@ resource "random_string" "random" {
 # S3バケットの作成
 resource "aws_s3_bucket" "test_bucket" {
   bucket = "${var.bucket_prefix}-${random_string.random.result}"
-  
+
   tags = {
     Environment = var.environment
     Terraform   = "true"
