@@ -4,8 +4,8 @@
 provider "azurerm" {
   features {}
 
-  
-  
+
+
   # 環境変数から認証情報を取得
   # GitHub Actionsでは、以下の環境変数を設定する必要があります:
   # - ARM_CLIENT_ID
