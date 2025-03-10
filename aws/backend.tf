@@ -2,7 +2,7 @@
 
 terraform {
   backend "s3" {
-    bucket         = "your-terraform-state-bucket"  # あなたのS3バケット名に置き換える
+    bucket         = "terraform-state-fumipen-123"  # 一意なバケット名に変更
     key            = "aws/terraform.tfstate"
     region         = "ap-northeast-1"
     encrypt        = true
