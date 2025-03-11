@@ -27,5 +27,5 @@ variable "environment" {
 variable "service_account_email" {
   description = "アクセス権を付与するサービスアカウントのメールアドレス"
   type        = string
-  default     = "github-actions@your-project-id.iam.gserviceaccount.com"
+  default     = "ioc-test@ioctest-453400.iam.gserviceaccount.com"
 }
