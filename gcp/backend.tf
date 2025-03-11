@@ -2,7 +2,7 @@
 
 terraform {
   backend "gcs" {
-    bucket = "your-terraform-state-bucket"  # あなたのGCS バケット名に置き換える
+    bucket = "terraform_ioc_test" # あなたのGCS バケット名に置き換える
     prefix = "terraform/state/gcp"
   }
 }

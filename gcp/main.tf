@@ -18,7 +18,7 @@ resource "random_string" "random" {
 resource "google_storage_bucket" "example" {
   name     = "${var.bucket_prefix}-${random_string.random.result}"
   location = var.gcp_region
-  
+
   # バケットのバージョニングを有効化
   versioning {
     enabled = true
